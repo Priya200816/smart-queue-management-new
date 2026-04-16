@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
+import os
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder='templates',
+            static_folder='static')
+
 app.secret_key = "secret"
 
 # ================= DB =================
@@ -42,7 +46,6 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        # Admin login
         if email == "admin@gmail.com" and password == "admin":
             session['admin'] = True
             return redirect('/admin')
@@ -94,18 +97,15 @@ def dashboard():
     conn = sqlite3.connect("database.db")
     cur = conn.cursor()
 
-    # Get user token
     cur.execute("SELECT token, priority FROM tokens WHERE email=?", (email,))
     data = cur.fetchone()
 
     user_token = data[0] if data else 0
     priority = data[1] if data else 0
 
-    # ===== ACTIONS =====
     if request.method == 'POST':
         action = request.form.get("action")
 
-        # 🎫 NORMAL TOKEN
         if action == "get" and user_token == 0:
             cur.execute("SELECT MAX(token) FROM tokens WHERE priority=0")
             last = cur.fetchone()[0]
@@ -116,7 +116,6 @@ def dashboard():
             conn.commit()
             return redirect('/dashboard')
 
-        # 🚨 EMERGENCY TOKEN
         elif action == "emergency" and user_token == 0:
             reason = request.form.get("reason")
 
@@ -130,31 +129,28 @@ def dashboard():
                 conn.commit()
                 return redirect('/dashboard')
 
-        # ❌ CANCEL TOKEN
         elif action == "cancel":
             cur.execute("DELETE FROM tokens WHERE email=?", (email,))
             conn.commit()
             return redirect('/dashboard')
 
-    # ===== CALCULATIONS =====
     cur.execute("SELECT COUNT(*) FROM tokens WHERE token < ?", (user_token,))
     people = cur.fetchone()[0] if user_token else 0
 
     wait = people * 2
 
-    # ===== STATUS =====
     status = "🟢 Waiting"
 
     if user_token == 0:
         status = "⚪ Not in queue"
     elif priority == 1:
-        status = "🚨 Emergency Priority"
+        status = "🚨 Emergency"
     elif user_token == current_token:
-        status = "🔴 Your Turn Now!"
+        status = "🔴 Your Turn!"
     elif user_token - current_token <= 2:
-        status = "🟠 Your turn is near!"
+        status = "🟠 Near"
     else:
-        status = "🟢 Waiting in queue"
+        status = "🟢 Waiting"
 
     conn.close()
 
@@ -180,11 +176,9 @@ def admin():
     if request.method == 'POST':
         action = request.form.get("action")
 
-        # ➕ NEXT
         if action == "next":
             current_token += 1
 
-        # ➖ REMOVE USER
         elif action == "remove":
             email = request.form.get("email")
             cur.execute("DELETE FROM tokens WHERE email=?", (email,))
@@ -207,4 +201,4 @@ def logout():
 
 # ================= RUN =================
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
