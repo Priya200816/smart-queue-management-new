@@ -1,11 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
-import os
 
-app = Flask(__name__,
-            template_folder='templates',
-            static_folder='static')
-
+app = Flask(__name__)
 app.secret_key = "secret"
 
 # ================= DB =================
@@ -37,6 +33,7 @@ init_db()
 
 current_token = 1
 
+
 # ================= LOGIN =================
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -46,6 +43,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
+        # ADMIN LOGIN
         if email == "admin@gmail.com" and password == "admin":
             session['admin'] = True
             return redirect('/admin')
@@ -67,6 +65,7 @@ def login():
 
     return render_template("login.html", error=error)
 
+
 # ================= SIGNUP =================
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -75,7 +74,9 @@ def signup():
         cur = conn.cursor()
 
         cur.execute("INSERT INTO users VALUES (?,?,?)",
-                    (request.form['email'], request.form['password'], request.form['name']))
+                    (request.form['email'],
+                     request.form['password'],
+                     request.form['name']))
 
         conn.commit()
         conn.close()
@@ -83,6 +84,7 @@ def signup():
         return redirect('/')
 
     return render_template("signup.html")
+
 
 # ================= DASHBOARD =================
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -97,15 +99,18 @@ def dashboard():
     conn = sqlite3.connect("database.db")
     cur = conn.cursor()
 
+    # GET USER TOKEN
     cur.execute("SELECT token, priority FROM tokens WHERE email=?", (email,))
     data = cur.fetchone()
 
     user_token = data[0] if data else 0
     priority = data[1] if data else 0
 
+    # ===== ACTIONS =====
     if request.method == 'POST':
         action = request.form.get("action")
 
+        # 🎫 NORMAL TOKEN
         if action == "get" and user_token == 0:
             cur.execute("SELECT MAX(token) FROM tokens WHERE priority=0")
             last = cur.fetchone()[0]
@@ -116,6 +121,7 @@ def dashboard():
             conn.commit()
             return redirect('/dashboard')
 
+        # 🚨 EMERGENCY TOKEN
         elif action == "emergency" and user_token == 0:
             reason = request.form.get("reason")
 
@@ -129,28 +135,29 @@ def dashboard():
                 conn.commit()
                 return redirect('/dashboard')
 
+        # ❌ CANCEL TOKEN
         elif action == "cancel":
             cur.execute("DELETE FROM tokens WHERE email=?", (email,))
             conn.commit()
             return redirect('/dashboard')
 
+    # ===== CALCULATIONS =====
     cur.execute("SELECT COUNT(*) FROM tokens WHERE token < ?", (user_token,))
     people = cur.fetchone()[0] if user_token else 0
 
     wait = people * 2
 
-    status = "🟢 Waiting"
-
+    # ===== STATUS =====
     if user_token == 0:
         status = "⚪ Not in queue"
     elif priority == 1:
-        status = "🚨 Emergency"
+        status = "🚨 Emergency Priority"
     elif user_token == current_token:
-        status = "🔴 Your Turn!"
+        status = "🔴 Your Turn Now!"
     elif user_token - current_token <= 2:
-        status = "🟠 Near"
+        status = "🟠 Your turn is near!"
     else:
-        status = "🟢 Waiting"
+        status = "🟢 Waiting in queue"
 
     conn.close()
 
@@ -161,6 +168,7 @@ def dashboard():
                            people=people,
                            wait=wait,
                            status=status)
+
 
 # ================= ADMIN =================
 @app.route('/admin', methods=['GET', 'POST'])
@@ -176,15 +184,24 @@ def admin():
     if request.method == 'POST':
         action = request.form.get("action")
 
+        # ➕ NEXT TOKEN
         if action == "next":
             current_token += 1
 
+        # ❌ REMOVE USER
         elif action == "remove":
             email = request.form.get("email")
             cur.execute("DELETE FROM tokens WHERE email=?", (email,))
             conn.commit()
 
-    cur.execute("SELECT * FROM tokens ORDER BY token ASC")
+    # ✅ JOIN USERS TABLE (IMPORTANT FIX)
+    cur.execute("""
+        SELECT tokens.email, tokens.token, tokens.priority, tokens.reason, users.name
+        FROM tokens
+        LEFT JOIN users ON tokens.email = users.email
+        ORDER BY tokens.token ASC
+    """)
+
     queue = cur.fetchall()
 
     conn.close()
@@ -193,14 +210,14 @@ def admin():
                            queue=queue,
                            current=current_token)
 
+
 # ================= LOGOUT =================
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
+
 # ================= RUN =================
 if __name__ == '__main__':
-    import os
-
-app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+    app.run(host='0.0.0.0', port=10000)
