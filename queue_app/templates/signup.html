@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Create Account</h2>
+    <p>Join Smart Queue System</p>
+
+    <form method="POST">
+
+        <input type="text" name="name" placeholder="Full Name" required>
+
+        <input type="email" name="email" placeholder="Email Address" required>
+
+        <input type="password" name="password" placeholder="Password" required>
+
+        <button type="submit">Signup</button>
+
+    </form>
+
+    <br>
+
+    <p>Already have an account?</p>
+    <a href="/">Login here</a>
+
+</div>
+
+</body>
+</html>

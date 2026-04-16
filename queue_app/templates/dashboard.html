@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- 🌟 NAVBAR -->
+<div class="navbar">
+    <div class="logo">💚 SmartQueue</div>
+    <div class="nav-right">
+        <span>👤 {{ name }}</span>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<!-- 🌈 MAIN DASHBOARD -->
+<div class="dashboard">
+
+    <!-- 🎉 WELCOME -->
+    <div class="welcome">
+        <h2>Welcome, {{ name }} 👋</h2>
+        <p>Track your queue in real-time</p>
+    </div>
+
+    <!-- 🎫 ACTION CARD -->
+    <div class="action-card">
+        <h3>Join Queue</h3>
+        <p>Get your token or request emergency priority</p>
+
+        <!-- 🎫 NORMAL TOKEN -->
+        <form method="POST" onsubmit="showPopup('🎫 Token Generated!', 'green')">
+            {% if token == 0 %}
+                <button name="action" value="get">🎫 Get Token</button>
+            {% else %}
+                <button disabled class="disabled">✔ Token Taken</button>
+            {% endif %}
+        </form>
+
+        <!-- 🚨 EMERGENCY TOKEN -->
+        {% if token == 0 %}
+        <form method="POST" onsubmit="showPopup('🚨 Emergency Request Sent!', 'red')">
+            <input type="text" name="reason" placeholder="Enter emergency reason" required>
+            <button name="action" value="emergency" class="cancel">
+                🚨 Emergency Token
+            </button>
+        </form>
+        {% endif %}
+
+        <!-- ❌ CANCEL TOKEN -->
+        {% if token != 0 %}
+        <form method="POST" onsubmit="showPopup('❌ Token Cancelled', 'gray')">
+            <button name="action" value="cancel" class="cancel">
+                ❌ Cancel Token
+            </button>
+        </form>
+
+        <p class="success">🎉 You are in the queue!</p>
+        {% endif %}
+    </div>
+
+    <!-- 📊 STATS -->
+    <div class="stats">
+
+        <div class="box blue">
+            <h4>Your Token</h4>
+            <p>{{ token if token!=0 else "--" }}</p>
+        </div>
+
+        <div class="box green">
+            <h4>Now Serving</h4>
+            <p>{{ current }}</p>
+        </div>
+
+        <div class="box orange">
+            <h4>People Ahead</h4>
+            <p>{{ people }}</p>
+        </div>
+
+        <div class="box purple">
+            <h4>Wait Time</h4>
+            <p>{{ wait }} min</p>
+        </div>
+
+    </div>
+
+    <!-- 🔔 STATUS -->
+    <div class="status">
+        <h3>{{ status }}</h3>
+
+        <!-- 🚨 EXTRA MESSAGE -->
+        {% if status == "🚨 Emergency Priority" %}
+            <p style="color:red; font-weight:bold;">
+                🚨 You are in priority queue
+            </p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- 🔔 POPUP SCRIPT (NEW) -->
+<script>
+function showPopup(message, color="black") {
+    let popup = document.createElement("div");
+    popup.innerText = message;
+
+    popup.style.position = "fixed";
+    popup.style.top = "20px";
+    popup.style.right = "20px";
+    popup.style.padding = "12px 20px";
+    popup.style.background = color;
+    popup.style.color = "white";
+    popup.style.borderRadius = "10px";
+    popup.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+    popup.style.zIndex = "1000";
+
+    document.body.appendChild(popup);
+
+    setTimeout(() => popup.remove(), 3000);
+}
+
+/* 🔥 AUTO STATUS POPUPS */
+window.onload = function() {
+    let status = "{{ status }}";
+
+    if(status.includes("Turn Now")){
+        showPopup("🚨 It's your turn now!", "red");
+    }
+    else if(status.includes("near")){
+        showPopup("🔔 Your turn is near!", "orange");
+    }
+    else if(status.includes("Emergency")){
+        showPopup("🚨 Priority Queue Activated!", "red");
+    }
+};
+</script>
+
+</body>
+</html>

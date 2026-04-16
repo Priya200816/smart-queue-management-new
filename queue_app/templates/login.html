@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Queue Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- Icon -->
+        <div class="icon">💚</div>
+
+        <!-- Title -->
+        <h1>Smart Queue</h1>
+        <p class="subtitle">HOSPITAL MANAGEMENT SYSTEM</p>
+        <p class="login-text">Sign in to your account</p>
+
+        <!-- Form -->
+        <form method="POST">
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="you@hospital.com" required>
+
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required>
+
+            <button type="submit">→ Sign In</button>
+
+        </form>
+
+        <!-- Error -->
+        <p class="error">{{ error }}</p>
+
+        <!-- Signup -->
+        <p class="signup">
+            Don't have an account?
+            <a href="/signup">Create Account</a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

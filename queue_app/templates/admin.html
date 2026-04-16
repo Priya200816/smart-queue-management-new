@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- 🔝 NAVBAR -->
+<div class="navbar">
+    <div class="logo">⚙️ Admin Panel</div>
+    <a href="/logout">Logout</a>
+</div>
+
+<!-- 📊 MAIN DASHBOARD -->
+<div class="dashboard">
+
+    <div class="welcome">
+        <h2>Admin Control Panel</h2>
+        <p>Manage queue, emergency requests & users</p>
+    </div>
+
+    <!-- 📋 QUEUE LIST -->
+    <div class="action-card">
+        <h3>📋 Current Queue</h3>
+
+        {% for q in queue %}
+        <div class="row">
+
+            <!-- USER INFO -->
+            <div>
+                <strong>🎫 {{ q[2] }}</strong> - {{ q[1] }}
+                <br>
+
+                {% if q[3] == 1 %}
+                    <span style="color:red;">🚨 Emergency</span>
+                {% endif %}
+
+                {% if q[4] %}
+                    <small>Reason: {{ q[4] }}</small>
+                {% endif %}
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <form method="POST">
+                <input type="hidden" name="email" value="{{ q[0] }}">
+
+                <button name="action" value="approve">✔</button>
+                <button name="action" value="reject">❌</button>
+                <button name="action" value="remove">➖</button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

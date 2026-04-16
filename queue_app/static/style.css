@@ -1,0 +1,204 @@
+/* ===== BODY ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #cfd9df, #e2ebf0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 18px;
+    color: #00a8cc;
+}
+
+.nav-right a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: red;
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard {
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    padding: 20px;
+}
+
+/* ===== WELCOME ===== */
+.welcome {
+    margin-bottom: 20px;
+}
+
+/* ===== CARD ===== */
+.action-card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* ===== BUTTON ===== */
+button {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* ===== SPECIAL BUTTONS ===== */
+.disabled {
+    background: gray;
+}
+
+.cancel {
+    background: red;
+}
+
+/* 🚨 EMERGENCY BUTTON */
+.emergency-btn {
+    background: red !important;
+}
+
+/* ===== SUCCESS TEXT ===== */
+.success {
+    color: green;
+    font-weight: bold;
+}
+
+/* ===== STATS ===== */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px auto;
+}
+
+.box {
+    padding: 20px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* COLORS */
+.blue { background: #007bff; }
+.green { background: #28a745; }
+.orange { background: #ff9800; }
+.purple { background: #6f42c1; }
+
+/* ===== STATUS ===== */
+.status {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 🚨 EMERGENCY STATUS TEXT */
+.status.emergency {
+    color: red;
+}
+
+/* ===== LOGIN / SIGNUP ===== */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+/* ===== ADMIN PANEL ===== */
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+/* ADMIN BUTTONS INLINE */
+.row form {
+    display: flex;
+    gap: 6px;
+}
+
+.row button {
+    width: auto;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* ✔ APPROVE BUTTON */
+button[value="approve"] {
+    background: #28a745 !important;
+}
+
+/* ❌ REJECT BUTTON */
+button[value="reject"] {
+    background: #ff9800 !important;
+}
+
+/* ➖ REMOVE BUTTON */
+button[value="remove"] {
+    background: red !important;
+}
+
+/* 🚨 EMERGENCY LABEL */
+.emergency {
+    color: red;
+    font-weight: bold;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width: 500px) {
+    .dashboard {
+        max-width: 90%;
+    }
+}
